@@ -17,9 +17,12 @@ class Sudoku:
     cols = 9
     boxes = 3
 
-    def __init__(self):
-        self._level = SudokuLevel.P
-        self._boards = np.zeros((Sudoku.rows, Sudoku.cols), dtype=np.int8)
+    def __init__(self, sudo=None):
+        if sudo is None:
+            self._level = SudokuLevel.P
+            self._boards = np.zeros((Sudoku.rows, Sudoku.cols), dtype=np.int8)
+        else:
+            self.loadFomString(sudo)
 
     def __getitem__(self, index):
         return self._boards[index]
@@ -40,6 +43,9 @@ class Sudoku:
                 return level
 
         return SudokuLevel.P
+
+    def copy(self):
+        return Sudoku(repr(self))
 
     def __repr__(self):
         sudo = [self._level.value]

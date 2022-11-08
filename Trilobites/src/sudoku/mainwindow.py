@@ -43,6 +43,10 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         self._comsumTime = -1
         self._timer = QTimer(self)
         self._timer.timeout.connect(self.timeoutProcess)
+        self._originSudoku = None
+        self._currentSudoku = None
+
+        self._operationList = []
 
         for i in range(Sudoku.rows):
             for j in range(Sudoku.cols):
@@ -53,6 +57,7 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
             self._buttons[i].setStyleSheet("QPushButton{background-color:rgb(224,224,224)}")
 
         self.newGameButton.clicked.connect(self.startNewGame)
+        self.restartButton.clicked.connect(self.restartGame)
 
         self.comsumeTime.setStyleSheet("QLabel{background-color:rgb(0,0,0)}")
 
@@ -78,9 +83,23 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
 
         return False
 
+    def initGame(self):
+        self._currentSudoku = self._originSudoku.copy()
+        self._operationList = []
+
     def startNewGame(self):
-        sudo = Sudoku.produceSudoku()
-        self.updateSudokuWindow(sudo)
+        self._originSudoku = Sudoku.produceSudoku()
+        self.initGame()
+
+        self.updateSudokuWindow(self._originSudoku)
+        self._timer.stop()
+        self._timer.start(1000)
+        self._comsumTime = -1
+        self.updateComsumeTime()
+
+    def restartGame(self):
+        self.initGame()
+        self.updateSudokuWindow(self._originSudoku)
         self._timer.stop()
         self._timer.start(1000)
         self._comsumTime = -1
