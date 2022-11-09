@@ -131,6 +131,9 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
             self._currentNumber = 0
 
     def rollbackGame(self):
+        if len(self._operationList) == 0:
+            return
+
         x, y, num = self._operationList.pop()
         self._currentSudoku[x, y] = 0
         self._labels[x][y].setText(' ')
