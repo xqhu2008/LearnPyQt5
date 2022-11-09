@@ -43,8 +43,8 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         self._comsumTime = -1
         self._timer = QTimer(self)
         self._timer.timeout.connect(self.timeoutProcess)
-        self._originSudoku = None
-        self._currentSudoku = None
+        self._originSudoku = Sudoku()
+        self._currentSudoku = Sudoku()
 
         self._operationList = []
 
@@ -85,6 +85,7 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
                     self._operationList.append((x, y, self._currentNumber))
 
                 obj.setText(str(self._currentNumber))
+                obj.setStyleSheet("QLabel{background-color:rgb(170,200,50)}")
             return True
 
         return False
@@ -153,8 +154,10 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
             for j in range(Sudoku.cols):
                 if sudo[i, j] != 0:
                     self._labels[i][j].setText(str(sudo[i, j]))
+                    self._labels[i][j].setStyleSheet("QLabel{background-color:rgb(232,232,232)}")
                 else:
                     self._labels[i][j].setText(' ')
+                    self._labels[i][j].setStyleSheet("QLabel{background-color:rgb(232,232,232)}")
 
 
 if __name__ == "__main__":
