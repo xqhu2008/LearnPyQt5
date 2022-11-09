@@ -18,10 +18,10 @@ class Sudoku:
     boxes = 3
 
     def __init__(self, sudo=None):
-        if sudo is None:
-            self._level = SudokuLevel.P
-            self._boards = np.zeros((Sudoku.rows, Sudoku.cols), dtype=np.int8)
-        else:
+        self._level = SudokuLevel.P
+        self._boards = np.zeros((Sudoku.rows, Sudoku.cols), dtype=np.int8)
+
+        if sudo is not None:
             self.loadFomString(sudo)
 
     def __getitem__(self, index):
@@ -56,7 +56,7 @@ class Sudoku:
         return ", ".join(sudo)
 
     @staticmethod
-    def produceSudoku(level=SudokuLevel.P):
+    def buildSudoku(level=SudokuLevel.P):
         sudo = Sudoku()
         sudo.loadFomString("P, 0, 4, 0, 0, 0, 2, 0, 1, 9, "
                               "0, 0, 0, 3, 5, 1, 0, 8, 6, "

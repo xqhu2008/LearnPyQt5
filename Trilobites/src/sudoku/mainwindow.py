@@ -58,6 +58,7 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
 
         self.newGameButton.clicked.connect(self.startNewGame)
         self.restartButton.clicked.connect(self.restartGame)
+        self.rollbackButton.clicked.connect(self.rollbackGame)
 
         self.comsumeTime.setStyleSheet("QLabel{background-color:rgb(0,0,0)}")
 
@@ -78,17 +79,29 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
             if self._currentNumber != 0:
+                x, y = self.findMouseClickPos(obj)
+                if x != -1 and y != -1:
+                    self._currentSudoku[x, y] = self._currentNumber
+                    self._operationList.append((x, y, self._currentNumber))
+
                 obj.setText(str(self._currentNumber))
             return True
 
         return False
+
+    def findMouseClickPos(self, obj):
+        for i in range(Sudoku.rows):
+            for j in range(Sudoku.cols):
+                if self._labels[i][j] == obj:
+                    return i, j
+        return -1, -1
 
     def initGame(self):
         self._currentSudoku = self._originSudoku.copy()
         self._operationList = []
 
     def startNewGame(self):
-        self._originSudoku = Sudoku.produceSudoku()
+        self._originSudoku = Sudoku.buildSudoku()
         self.initGame()
 
         self.updateSudokuWindow(self._originSudoku)
@@ -96,6 +109,12 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         self._timer.start(1000)
         self._comsumTime = -1
         self.updateComsumeTime()
+
+        if self._currentNumber != 0:
+            self._buttons[self._currentNumber].setChecked(False)
+            self._buttons[self._currentNumber].setChecked(False)
+            self._buttons[self._currentNumber].setStyleSheet("QPushButton{background-color:rgb(224,224,224)}")
+            self._currentNumber = 0
 
     def restartGame(self):
         self.initGame()
@@ -104,6 +123,17 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         self._timer.start(1000)
         self._comsumTime = -1
         self.updateComsumeTime()
+
+        if self._currentNumber != 0:
+            self._buttons[self._currentNumber].setChecked(False)
+            self._buttons[self._currentNumber].setChecked(False)
+            self._buttons[self._currentNumber].setStyleSheet("QPushButton{background-color:rgb(224,224,224)}")
+            self._currentNumber = 0
+
+    def rollbackGame(self):
+        x, y, num = self._operationList.pop()
+        self._currentSudoku[x, y] = 0
+        self._labels[x][y].setText(' ')
 
     def updateComsumeTime(self):
         self._comsumTime += 1
