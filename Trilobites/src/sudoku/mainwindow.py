@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.QtCore import QEvent, QTimer
 
 from sudokuui import Ui_sudokuMainWindow
-from sudoku import Sudoku
+from sudoku import Sudoku, SudokuLevel
 
 
 class SudokuWindow(QWidget, Ui_sudokuMainWindow):
@@ -101,8 +101,20 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         self._currentSudoku = self._originSudoku.copy()
         self._operationList = []
 
+    def getGameLevel(self):
+        levels = {
+            "初级" : SudokuLevel.P,
+            "中级" : SudokuLevel.M,
+            "高级" : SudokuLevel.H,
+            "特级" : SudokuLevel.S,
+            "超级" : SudokuLevel.T
+        }
+
+        return levels.setdefault(self.gameLevelComboBox.currentText(), SudokuLevel.P)
+
     def startNewGame(self):
-        self._originSudoku = Sudoku.buildSudoku()
+        # self._originSudoku = Sudoku.buildSudoku()
+        self._originSudoku = Sudoku.generateSudoku(self.getGameLevel())
         self.initGame()
 
         self.updateSudokuWindow(self._originSudoku)
