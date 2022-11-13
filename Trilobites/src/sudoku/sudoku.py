@@ -59,7 +59,7 @@ class Sudoku:
         if row >= Sudoku.rows or col >= Sudoku.cols:
             return True
 
-        for num in range(1, Sudoku.rows):
+        for num in range(1, Sudoku.rows + 1):
             if self.isValid(row, col, num):
                 self[row, col] = num
 
@@ -156,20 +156,20 @@ class Sudoku:
 
 
 if __name__ == "__main__":
-    # sudo = Sudoku()
-    #
-    # sudo.loadFomString("P, "
-    #                    "0, 4, 0, 0, 0, 2, 0, 1, 9, "
-    #                    "0, 0, 0, 3, 5, 1, 0, 8, 6, "
-    #                    "3, 1, 0, 0, 9, 4, 7, 0, 0, "
-    #                    "0, 9, 4, 0, 0, 0, 0, 0, 7, "
-    #                    "0, 0, 0, 0, 0, 0, 0, 0, 0, "
-    #                    "2, 0, 0, 0, 0, 0, 8, 9, 0, "
-    #                    "0, 0, 9, 5, 2, 0, 0, 4, 1, "
-    #                    "4, 2, 0, 1, 6, 9, 0, 0, 0, "
-    #                    "1, 6, 0, 8, 0, 0, 0, 7, 0")
-    # print(sudo)
-    # sudo.solve()
-    # print("\n")
-    # print(sudo)
-    print(Sudoku.generateSudoku())
+    sudo = Sudoku()
+
+    sudo.loadFomString("P, "
+                       "0, 4, 0, 0, 0, 2, 0, 1, 9, "
+                       "0, 0, 0, 3, 5, 1, 0, 8, 6, "
+                       "3, 1, 0, 0, 9, 4, 7, 0, 0, "
+                       "0, 9, 4, 0, 0, 0, 0, 0, 7, "
+                       "0, 0, 0, 0, 0, 0, 0, 0, 0, "
+                       "2, 0, 0, 0, 0, 0, 8, 9, 0, "
+                       "0, 0, 9, 5, 2, 0, 0, 4, 1, "
+                       "4, 2, 0, 1, 6, 9, 0, 0, 0, "
+                       "1, 6, 0, 8, 0, 0, 0, 7, 0")
+    print(sudo)
+    sudo.solve()
+    print("\n")
+    print(sudo)
+    # print(Sudoku.generateSudoku())
