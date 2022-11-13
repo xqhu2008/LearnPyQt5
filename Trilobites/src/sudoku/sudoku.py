@@ -3,7 +3,7 @@
 
 import numpy as np
 from enum import Enum
-
+from functools import reduce
 
 class SudokuLevel(Enum):
     P = 'P'
@@ -106,19 +106,18 @@ class Sudoku:
 
         return Sudoku(level.value + ', ' + ", ".join(map(str, mm.ravel())))
 
+    def findAllowedNumber(self, row, col):
+        colRest = np.setdiff1d(np.arange(self.rows + 1), self[row, :])
+        rowRest = np.setdiff1d(np.arange(self.cols + 1), self[:, col])
+        boxRest = np.setdiff1d(np.arange(self.rows + 1), self[row//3 * 3 : row//3 * 3 + 3, col//3 * 3 : col//3 * 3 + 3])
+        return reduce(np.intersect1d, (rowRest, colRest, boxRest))
+
     def loadFomString(self, sudo):
         s = sudo.split(', ')
         self._level = self._parseSudokuLevel(s[0])
         for i in range(self.rows):
             for j in range(self.cols):
                 self[i, j] = int(s[i * self.cols + j + 1])
-
-    def _parseSudokuLevel(self, s):
-        for level in SudokuLevel:
-            if level.value == 's':
-                return level
-
-        return SudokuLevel.P
 
     def copy(self):
         return Sudoku(repr(self))

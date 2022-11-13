@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding : utf-8 -*-
 
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
 from PyQt5.QtCore import QEvent, QTimer
 
 from sudokuui import Ui_sudokuMainWindow
