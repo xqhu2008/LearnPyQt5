@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding : utf-8 -*-
 
-from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox, QLabel, QPushButton
 from PyQt5.QtCore import QEvent, QTimer
 
 from sudokuui import Ui_sudokuMainWindow
@@ -54,7 +54,7 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
 
         for i in range(1, 10):
             self._buttons[i].clicked.connect(self.selectCurrentNumber)
-            self._buttons[i].setStyleSheet("QPushButton{background-color:rgb(224,224,224)}")
+            self.setWidgetColor(self._buttons[i])
 
         self.newGameButton.clicked.connect(self.startNewGame)
         self.restartButton.clicked.connect(self.restartGame)
@@ -67,12 +67,12 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         number = int(sender.text())
         if self._currentNumber != 0:
             self._buttons[self._currentNumber].setChecked(False)
-            self._buttons[self._currentNumber].setStyleSheet("QPushButton{background-color:rgb(224,224,224)}")
+            self.setWidgetColor(self._buttons[self._currentNumber])
 
         if number != self._currentNumber:
             self._currentNumber = number
             self._buttons[self._currentNumber].setChecked(True)
-            self._buttons[self._currentNumber].setStyleSheet("QPushButton{background-color:rgb(170,200,50)}")
+            self.setWidgetColor(self._buttons[self._currentNumber], background=True)
         else:
             self._currentNumber = 0
 
@@ -85,7 +85,7 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
                     self._operationList.append((x, y, self._currentNumber))
 
                 obj.setText(str(self._currentNumber))
-                obj.setStyleSheet("QLabel{background-color:rgb(170,200,50)}")
+                self.setWidgetColor(obj, background=True)
             return True
 
         return False
@@ -126,7 +126,7 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         if self._currentNumber != 0:
             self._buttons[self._currentNumber].setChecked(False)
             self._buttons[self._currentNumber].setChecked(False)
-            self._buttons[self._currentNumber].setStyleSheet("QPushButton{background-color:rgb(224,224,224)}")
+            self.setWidgetColor(self._buttons[self._currentNumber])
             self._currentNumber = 0
 
     def restartGame(self):
@@ -140,7 +140,7 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         if self._currentNumber != 0:
             self._buttons[self._currentNumber].setChecked(False)
             self._buttons[self._currentNumber].setChecked(False)
-            self._buttons[self._currentNumber].setStyleSheet("QPushButton{background-color:rgb(224,224,224)}")
+            self.setWidgetColor(self._buttons[self._currentNumber])
             self._currentNumber = 0
 
     def rollbackGame(self):
@@ -166,10 +166,23 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
             for j in range(Sudoku.cols):
                 if sudo[i, j] != 0:
                     self._labels[i][j].setText(str(sudo[i, j]))
-                    self._labels[i][j].setStyleSheet("QLabel{background-color:rgb(232,232,232)}")
+                    self.setWidgetColor(self._labels[i][j])
                 else:
                     self._labels[i][j].setText(' ')
-                    self._labels[i][j].setStyleSheet("QLabel{background-color:rgb(232,232,232)}")
+                    self.setWidgetColor(self._labels[i][j])
+
+    def setWidgetColor(self, obj, *, background=False, color=False):
+        color_styles = {
+            "focus": "rgb(255, 255, 220)",
+            "normal": "rgb(224, 224, 224)",
+            "conflict": "rgb(255, 0, 0)",
+            "face": "rgb(0, 0, 0"
+        }
+
+        if background:
+            obj.setStyleSheet(obj.__class__.__name__ + "{background-color:" + color_styles["focus"] + "}")
+        else:
+            obj.setStyleSheet(obj.__class__.__name__ + "{background-color:" + color_styles["normal"] + "}")
 
 
 if __name__ == "__main__":

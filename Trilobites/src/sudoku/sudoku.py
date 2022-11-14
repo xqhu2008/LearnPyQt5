@@ -4,6 +4,8 @@
 import numpy as np
 from enum import Enum
 from functools import reduce
+from typing import *
+
 
 class SudokuLevel(Enum):
     P = 'P'
@@ -12,12 +14,13 @@ class SudokuLevel(Enum):
     S = 'S'
     T = 'T'
 
+
 class Sudoku:
     rows = 9
     cols = 9
     boxes = 3
 
-    def __init__(self, sudo=None):
+    def __init__(self, sudo : str = None) -> None:
         self._level = SudokuLevel.P
         self._boards = np.zeros((Sudoku.rows, Sudoku.cols), dtype=np.int8)
 
@@ -36,6 +39,10 @@ class Sudoku:
                 if self[i, j] == 0:
                     return i, j
         return Sudoku.rows, Sudoku.cols
+
+    def isSolved(self):
+        row, col = self.findEmpty()
+        return True if row >= Sudoku.rows or col >= Sudoku.cols else False
 
     def isValid(self, row, col, num):
         if num in self[row, :]:
@@ -114,10 +121,16 @@ class Sudoku:
 
     def loadFomString(self, sudo):
         s = sudo.split(', ')
-        self._level = self._parseSudokuLevel(s[0])
+        self._level = self.parseSudokuLevel(s[0])
         for i in range(self.rows):
             for j in range(self.cols):
                 self[i, j] = int(s[i * self.cols + j + 1])
+
+    def parseSudokuLevel(self, s):
+        for level in SudokuLevel:
+            if level.value == s:
+                return level
+        return SudokuLevel.P
 
     def copy(self):
         return Sudoku(repr(self))
