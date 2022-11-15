@@ -60,8 +60,6 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         self.restartButton.clicked.connect(self.restartGame)
         self.rollbackButton.clicked.connect(self.rollbackGame)
 
-        self.comsumeTime.setStyleSheet("QLabel{background-color:rgb(0,0,0)}")
-
     def selectCurrentNumber(self):
         sender = self.sender()
         number = int(sender.text())
@@ -84,8 +82,15 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
                     self._currentSudoku[x, y] = self._currentNumber
                     self._operationList.append((x, y, self._currentNumber))
 
-                obj.setText(str(self._currentNumber))
-                self.setWidgetColor(obj, background=True)
+                    obj.setText(str(self._currentNumber))
+                    self.setWidgetColor(obj, background=True)
+
+                    if pos := self._currentSudoku.findConflicted(x, y):
+                        pass
+
+                    if self._currentSudoku.isSolved():
+                        QMessageBox.information(self, '祝贺！', "成功解决当前sudoku！", QMessageBox.Close, QMessageBox.Close)
+
             return True
 
         return False
@@ -174,7 +179,7 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
     def setWidgetColor(self, obj, *, background=False, color=False):
         color_styles = {
             "focus": "rgb(255, 255, 220)",
-            "normal": "rgb(224, 224, 224)",
+            "normal": "rgb(240, 240, 240)",
             "conflict": "rgb(255, 0, 0)",
             "face": "rgb(0, 0, 0"
         }
@@ -183,6 +188,11 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
             obj.setStyleSheet(obj.__class__.__name__ + "{background-color:" + color_styles["focus"] + "}")
         else:
             obj.setStyleSheet(obj.__class__.__name__ + "{background-color:" + color_styles["normal"] + "}")
+
+        if color:
+            obj.setStyleSheet(obj.__class__.__name__ + "{color:" + color_styles["conflict"] + "}")
+        else:
+            obj.setStyleSheet(obj.__class__.__name__ + "{color:" + color_styles["face"] + "}")
 
 
 if __name__ == "__main__":

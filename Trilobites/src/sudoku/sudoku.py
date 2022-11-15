@@ -40,6 +40,27 @@ class Sudoku:
                     return i, j
         return Sudoku.rows, Sudoku.cols
 
+    def findConflicted(self, row, col):
+        result = []
+        back = self[row, col]
+        self[row, col] = 0
+        for i in range(self.cols):
+            if self[row, i] == back:
+                result.append((row, i))
+
+        for i in range(self.rows):
+            if self[i, col] == back:
+                result.append((i, col))
+
+        for i in range(row//3 * 3, row//3 * 3 + 3):
+            for j in range(col//3 * 3, col//3 * 3 + 3):
+                if self[i, j] == back:
+                    result.append((i, j))
+
+        self[row, col] = back
+
+        return result
+
     def isSolved(self):
         row, col = self.findEmpty()
         return True if row >= Sudoku.rows or col >= Sudoku.cols else False
