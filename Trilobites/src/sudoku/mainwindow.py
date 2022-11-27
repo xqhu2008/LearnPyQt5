@@ -40,11 +40,10 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
                                self.numberButton7, self.numberButton8, self.numberButton9]
 
         self._currentNumber = 0
-        self._comsumTime = -1
-        self._timer = QTimer(self)
-        self._timer.timeout.connect(self.timeoutProcess)
         self._originSudoku = Sudoku()
         self._currentSudoku = Sudoku()
+
+        self.initTimer()
 
         self._operationList = []
 
@@ -54,23 +53,33 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
 
         for i in range(1, 10):
             self._buttons[i].clicked.connect(self.selectCurrentNumber)
-            self.setWidgetColor(self._buttons[i])
+            self.setWidgetBackgroundColor(self._buttons[i])
 
         self.newGameButton.clicked.connect(self.startNewGame)
         self.restartButton.clicked.connect(self.restartGame)
         self.rollbackButton.clicked.connect(self.rollbackGame)
+
+    def initTimer(self):
+        self._timeCounter = -1
+        self._timer = QTimer(self)
+        self._timer.timeout.connect(self.timeoutProcess)
+
+    def resetTimer(self):
+        self._timer.stop()
+        self._timer.start(1000)
+        self._timeCounter = -1
 
     def selectCurrentNumber(self):
         sender = self.sender()
         number = int(sender.text())
         if self._currentNumber != 0:
             self._buttons[self._currentNumber].setChecked(False)
-            self.setWidgetColor(self._buttons[self._currentNumber])
+            self.setWidgetBackgroundColor(self._buttons[self._currentNumber])
 
         if number != self._currentNumber:
             self._currentNumber = number
             self._buttons[self._currentNumber].setChecked(True)
-            self.setWidgetColor(self._buttons[self._currentNumber], background=True)
+            self.setWidgetBackgroundColor(self._buttons[self._currentNumber], 'f')
         else:
             self._currentNumber = 0
 
@@ -83,7 +92,7 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
                     self._operationList.append((x, y, self._currentNumber))
 
                     obj.setText(str(self._currentNumber))
-                    self.setWidgetColor(obj, background=True)
+                    self.setWidgetBackgroundColor(obj, 'f')
 
                     if pos := self._currentSudoku.findConflicted(x, y):
                         pass
@@ -123,15 +132,13 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         self.initGame()
 
         self.updateSudokuWindow(self._originSudoku)
-        self._timer.stop()
-        self._timer.start(1000)
-        self._comsumTime = -1
-        self.updateComsumeTime()
+        self.resetTimer()
+        self.updateTimeCounter()
 
         if self._currentNumber != 0:
             self._buttons[self._currentNumber].setChecked(False)
             self._buttons[self._currentNumber].setChecked(False)
-            self.setWidgetColor(self._buttons[self._currentNumber])
+            self.setWidgetBackgroundColor(self._buttons[self._currentNumber])
             self._currentNumber = 0
 
     def restartGame(self):
@@ -139,13 +146,13 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         self.updateSudokuWindow(self._originSudoku)
         self._timer.stop()
         self._timer.start(1000)
-        self._comsumTime = -1
-        self.updateComsumeTime()
+        self._timeCounter = -1
+        self.updateTimeCounter()
 
         if self._currentNumber != 0:
             self._buttons[self._currentNumber].setChecked(False)
             self._buttons[self._currentNumber].setChecked(False)
-            self.setWidgetColor(self._buttons[self._currentNumber])
+            self.setWidgetBackgroundColor(self._buttons[self._currentNumber])
             self._currentNumber = 0
 
     def rollbackGame(self):
@@ -156,14 +163,14 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
         self._currentSudoku[x, y] = 0
         self._labels[x][y].setText(' ')
 
-    def updateComsumeTime(self):
-        self._comsumTime += 1
+    def updateTimeCounter(self):
+        self._timeCounter += 1
 
-        minute, second = divmod(self._comsumTime, 60)
-        self.comsumeTime.setText(f"{minute}:{second:02d}")
+        minute, second = divmod(self._timeCounter, 60)
+        self.sudokuTimeCounter.setText(f"{minute}:{second:02d}")
 
     def timeoutProcess(self):
-        self.updateComsumeTime()
+        self.updateTimeCounter()
         self._timer.start(1000)
 
     def updateSudokuWindow(self, sudo):
@@ -171,28 +178,26 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
             for j in range(Sudoku.cols):
                 if sudo[i, j] != 0:
                     self._labels[i][j].setText(str(sudo[i, j]))
-                    self.setWidgetColor(self._labels[i][j])
+                    self.setWidgetBackgroundColor(self._labels[i][j])
                 else:
                     self._labels[i][j].setText(' ')
-                    self.setWidgetColor(self._labels[i][j])
+                    self.setWidgetBackgroundColor(self._labels[i][j])
 
-    def setWidgetColor(self, obj, *, background=False, color=False):
+    def setWidgetBackgroundColor(self, obj, color='n'):
         color_styles = {
-            "focus": "rgb(255, 255, 220);",
-            "normal": "rgb(240, 240, 240);",
-            "conflict": "rgb(255, 0, 0);",
-            "face": "rgb(0, 0, 0);"
+            "f": "rgb(255, 255, 220);",
+            "n": "rgb(240, 240, 240);",
         }
 
-        if background:
-            obj.setStyleSheet(obj.__class__.__name__ + "{background-color: " + color_styles["focus"] + "}")
-        else:
-            obj.setStyleSheet(obj.__class__.__name__ + "{background-color: " + color_styles["normal"] + "}")
+        obj.setStyleSheet(obj.__class__.__name__ + "{background-color: " + color_styles[color] + "}")
 
-        if color:
-            obj.setStyleSheet(obj.__class__.__name__ + "{color: " + color_styles["conflict"] + "}")
-        else:
-            obj.setStyleSheet(obj.__class__.__name__ + "{color: " + color_styles["face"] + "}")
+    def setWidgetColor(self, obj, color='n'):
+        color_styles = {
+            "f": "rgb(255, 0, 0);",
+            "n": "rgb(0, 0, 0);"
+        }
+
+        obj.setStyleSheet(obj.__class__.__name__ + "{color: " + color_styles[color] + "}")
 
 
 if __name__ == "__main__":
