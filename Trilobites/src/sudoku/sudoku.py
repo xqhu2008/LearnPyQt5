@@ -40,27 +40,6 @@ class Sudoku:
                     return i, j
         return Sudoku.rows, Sudoku.cols
 
-    def findConflicted(self, row, col):
-        result = []
-        back = self[row, col]
-        self[row, col] = 0
-        for i in range(self.cols):
-            if self[row, i] == back:
-                result.append((row, i))
-
-        for i in range(self.rows):
-            if self[i, col] == back:
-                result.append((i, col))
-
-        for i in range(row//3 * 3, row//3 * 3 + 3):
-            for j in range(col//3 * 3, col//3 * 3 + 3):
-                if self[i, j] == back:
-                    result.append((i, j))
-
-        self[row, col] = back
-
-        return result
-
     def isSolved(self):
         row, col = self.findEmpty()
         return True if row >= Sudoku.rows or col >= Sudoku.cols else False
@@ -140,6 +119,44 @@ class Sudoku:
         boxRest = np.setdiff1d(np.arange(self.rows + 1), self[row//3 * 3 : row//3 * 3 + 3, col//3 * 3 : col//3 * 3 + 3])
         return reduce(np.intersect1d, (rowRest, colRest, boxRest))
 
+    def findConflictedNumber(self, row, col, num):
+        pos = set()
+        colRest = np.argwhere(self[row, :] == num)
+        for y in colRest:
+            pos.add((row, y[0]))
+
+        rowRest = np.argwhere(self[:, col] == num)
+        for x in rowRest:
+            pos.add((x[0], col))
+        boxRest = np.argwhere(self[row//3 * 3 : row//3 * 3 + 3, col//3 * 3 : col//3 * 3 + 3] == num)
+        for p in boxRest:
+            pos.add((p[0] + row//3 * 3, p[1]+col//3 * 3))
+
+        return np.array(pos)
+
+    def findConflicted(self, row, col):
+        result = set()
+        back = self[row, col]
+        self[row, col] = 0
+        for i in range(self.cols):
+            if self[row, i] == back:
+                result.add((row, i))
+
+        for i in range(self.rows):
+            if self[i, col] == back:
+                result.add((i, col))
+
+        for i in range(row//3 * 3, row//3 * 3 + 3):
+            for j in range(col//3 * 3, col//3 * 3 + 3):
+                if self[i, j] == back:
+                    result.add((i, j))
+
+        self[row, col] = back
+        if len(result) != 0:
+            result.add((row, col))
+
+        return result
+
     def loadFomString(self, sudo):
         s = sudo.split(', ')
         self._level = self.parseSudokuLevel(s[0])
@@ -202,7 +219,8 @@ if __name__ == "__main__":
                        "4, 2, 0, 1, 6, 9, 0, 0, 0, "
                        "1, 6, 0, 8, 0, 0, 0, 7, 0")
     print(sudo)
-    sudo.solve()
-    print("\n")
-    print(sudo)
-    # print(Sudoku.generateSudoku())
+    # sudo.solve()
+    # print("\n")
+    # print(sudo)
+    # # print(Sudoku.generateSudoku())
+    print(sudo.findConflictedNumber(2, 2, 4))
