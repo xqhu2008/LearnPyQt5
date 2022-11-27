@@ -178,21 +178,21 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
 
     def setWidgetColor(self, obj, *, background=False, color=False):
         color_styles = {
-            "focus": "rgb(255, 255, 220)",
-            "normal": "rgb(240, 240, 240)",
-            "conflict": "rgb(255, 0, 0)",
-            "face": "rgb(0, 0, 0"
+            "focus": "rgb(255, 255, 220);",
+            "normal": "rgb(240, 240, 240);",
+            "conflict": "rgb(255, 0, 0);",
+            "face": "rgb(0, 0, 0);"
         }
 
         if background:
-            obj.setStyleSheet(obj.__class__.__name__ + "{background-color:" + color_styles["focus"] + "}")
+            obj.setStyleSheet(obj.__class__.__name__ + "{background-color: " + color_styles["focus"] + "}")
         else:
-            obj.setStyleSheet(obj.__class__.__name__ + "{background-color:" + color_styles["normal"] + "}")
+            obj.setStyleSheet(obj.__class__.__name__ + "{background-color: " + color_styles["normal"] + "}")
 
         if color:
-            obj.setStyleSheet(obj.__class__.__name__ + "{color:" + color_styles["conflict"] + "}")
+            obj.setStyleSheet(obj.__class__.__name__ + "{color: " + color_styles["conflict"] + "}")
         else:
-            obj.setStyleSheet(obj.__class__.__name__ + "{color:" + color_styles["face"] + "}")
+            obj.setStyleSheet(obj.__class__.__name__ + "{color: " + color_styles["face"] + "}")
 
 
 if __name__ == "__main__":
