@@ -94,7 +94,7 @@ class SudokuWindow(QWidget, Ui_sudokuMainWindow):
                     obj.setText(str(self._currentNumber))
                     self.setWidgetBackgroundColor(obj, 'f')
 
-                    if pos := self._currentSudoku.findConflicted(x, y):
+                    if pos := self._currentSudoku.findConflictedPos(x, y):
                         pass
 
                     if self._currentSudoku.isSolved():

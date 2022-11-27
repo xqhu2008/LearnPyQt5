@@ -77,6 +77,22 @@ class Sudoku:
 
         return False
 
+    # def solveWithCached(self):
+    #     row, col = self.findEmpty()
+    #     if row >= Sudoku.rows or col >= Sudoku.cols:
+    #         return True
+    #
+    #     for num in self.findAllowedNumber(row, col):
+    #         if self.isValid(row, col, num):
+    #             self[row, col] = num
+    #
+    #             if self.solveWithCached():
+    #                 return True
+    #
+    #             self[row, col] = 0
+    #
+    #     return False
+
     @staticmethod
     def generateSudoku(level=SudokuLevel.M):
         maskRateTable = {
@@ -114,10 +130,10 @@ class Sudoku:
         return Sudoku(level.value + ', ' + ", ".join(map(str, mm.ravel())))
 
     def findAllowedNumber(self, row, col):
-        colRest = np.setdiff1d(np.arange(self.rows + 1), self[row, :])
-        rowRest = np.setdiff1d(np.arange(self.cols + 1), self[:, col])
-        boxRest = np.setdiff1d(np.arange(self.rows + 1), self[row//3 * 3 : row//3 * 3 + 3, col//3 * 3 : col//3 * 3 + 3])
-        return reduce(np.intersect1d, (rowRest, colRest, boxRest))
+        colRest = self[row, :].tolist()
+        rowRest = self[:, col].tolist()
+        boxRest = self[row//3 * 3:row//3 * 3 + 3, col//3 * 3:col//3 * 3 + 3].ravel().tolist()
+        return np.array(set(range(self.rows + 1)) - set(colRest + rowRest + boxRest))
 
     def findConflictedNumber(self, row, col, num):
         pos = set()
@@ -134,23 +150,10 @@ class Sudoku:
 
         return np.array(pos)
 
-    def findConflicted(self, row, col):
-        result = set()
+    def findConflictedPos(self, row, col):
         back = self[row, col]
         self[row, col] = 0
-        for i in range(self.cols):
-            if self[row, i] == back:
-                result.add((row, i))
-
-        for i in range(self.rows):
-            if self[i, col] == back:
-                result.add((i, col))
-
-        for i in range(row//3 * 3, row//3 * 3 + 3):
-            for j in range(col//3 * 3, col//3 * 3 + 3):
-                if self[i, j] == back:
-                    result.add((i, j))
-
+        result = self._findConflictedNumber(row, col, back)
         self[row, col] = back
         if len(result) != 0:
             result.add((row, col))
@@ -219,8 +222,9 @@ if __name__ == "__main__":
                        "4, 2, 0, 1, 6, 9, 0, 0, 0, "
                        "1, 6, 0, 8, 0, 0, 0, 7, 0")
     print(sudo)
-    # sudo.solve()
-    # print("\n")
-    # print(sudo)
+    sudo.solveWithCached()
+    print("\n")
+    print(sudo)
     # # print(Sudoku.generateSudoku())
-    print(sudo.findConflictedNumber(2, 2, 4))
+    # print(sudo.findConflictedNumber(2, 2, 4))
+    # print(sudo.findAllowedNumber(0, 0))
